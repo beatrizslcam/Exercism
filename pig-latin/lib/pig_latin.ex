@@ -3,7 +3,7 @@ defmodule PigLatin do
 
   @spec translate(phrase :: String.t()) :: String.t()
 
-  	def translate(phrase) do
+  def translate(phrase) do
     words = String.split(phrase)
     pig_phrase = []
     take_word(pig_phrase, words)
@@ -21,18 +21,18 @@ defmodule PigLatin do
   end
 
   defp verify_vowel(letter) do
-    Enum.member?(@vowel, letter)
+      if Enum.member?(@vowel, letter) do :vowel
+      else :consoant
+    end
   end
 
-  defp verifying(false, "q", "u", head, tail, pig_phrase) do
+  defp verifying(:consoant, "q", "u", head, tail, pig_phrase) do
     (pig_phrase ++ [String.replace(head, "qu", "") <> "qu" <> "ay"])
     |> take_word(tail)
   end
 
-  defp verifying(false, "x", second_letter, head, tail, pig_phrase) do
-    temp = verify_vowel(second_letter)
-
-    if temp == true do
+  defp verifying(:consoant, "x", second_letter, head, tail, pig_phrase) do
+   if verify_vowel(second_letter) == :vowel  do
       pig_phrase ++ (String.replace(head, "x", "") <> "x" <> "ay")
     else
       (pig_phrase ++ [head <> "ay"])
@@ -40,10 +40,8 @@ defmodule PigLatin do
     end
   end
 
-  defp verifying(false, "y", second_letter, head, tail, pig_phrase) do
-    temp = verify_vowel(second_letter)
-
-    if temp == true do
+  defp verifying(:consoant, "y", second_letter, head, tail, pig_phrase) do
+       if verify_vowel(second_letter) == :vowel do
       pig_phrase ++ (String.replace(head, "y", "") <> "y" <> "ay")
     else
       (pig_phrase ++ [head <> "ay"])
@@ -51,17 +49,15 @@ defmodule PigLatin do
     end
   end
 
-  defp verifying(false, first_letter, second_letter, head, tail, pig_phrase) do
-    temp = verify_vowel(second_letter)
-
-    if temp == true do
+  defp verifying(:consoant, first_letter, second_letter, head, tail, pig_phrase) do
+      if verify_vowel(second_letter)== :vowel do
       switch(head, tail, pig_phrase, first_letter)
     else
-      find(temp, head, 2, tail, pig_phrase)
+      find(:consoant, head, 2, tail, pig_phrase)
     end
   end
 
-  defp verifying(true, _first_letter, _second_letter, head, tail, pig_phrase) do
+  defp verifying(:vowel, _first_letter, _second_letter, head, tail, pig_phrase) do
     (pig_phrase ++ [head <> "ay"])
     |> take_word(tail)
   end
@@ -71,13 +67,13 @@ defmodule PigLatin do
     |> take_word(tail)
   end
 
-  defp find(false, head, acc, tail, pig_phrase) do
+  defp find(:consoant, head, acc, tail, pig_phrase) do
     String.at(head, acc)
     |> verify_vowel()
     |> find(head, acc + 1, tail, pig_phrase)
   end
 
-  defp find(true, head, acc, tail, pig_phrase) do
+  defp find(:vowel, head, acc, tail, pig_phrase) do
     (String.at(head, acc - 1) == "u" && String.at(head, acc - 2) == "q")
     |> final(head, acc, tail, pig_phrase)
   end
